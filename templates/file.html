@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Chat</title>
+    </head>
+    <body>
+        <h1>WebSocket Chat</h1>
+        <form onsubmit="sendMessage(event)" enctype="multipart/form-data">
+            <input type="file" id="messageText" autocomplete="off"/>
+            <button>Send</button>
+        </form>
+        <ul id='messages'>
+        </ul>
+
+        <script>
+            var ws = new WebSocket("ws://localhost:8000/ws");
+            const fileInput = document.getElementById('messageText')
+
+            let encodedFile = null
+
+            ws.onmessage = function(event) {
+                var messages = document.getElementById('messages')
+                var message = document.createElement('li')
+                var content = document.createTextNode(event.data)
+                message.appendChild(content)
+                messages.appendChild(message)
+                alert(event.data)
+            };
+
+            function sendMessage(event) {
+
+
+                ws.send(encodedFile)
+
+                input.value = ''
+                event.preventDefault()
+            }
+
+            fileInput.addEventListener('change', (e) => {
+                // Get a reference to the file
+                const file = e.target.files[0];
+
+                // Encode the file using the FileReader API
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    // Use a regex to remove data url part
+                    const base64String = reader.result
+                        .replace('data:', '')
+                        .replace(/^.+,/, '');
+
+                    encodedFile = base64String
+
+                    // Logs wL2dvYWwgbW9yZ...
+                };
+                reader.readAsDataURL(file);
+            });
+
+        </script>
+
+    </body>
+</html>
